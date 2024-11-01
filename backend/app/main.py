@@ -1,7 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from .model import load_model, predict
-import pandas as pd 
+import pandas as pd  
+import numpy as np
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -25,7 +26,14 @@ class PredictionInput(BaseModel):
 
 @app.post("/") 
 async def read_root(): 
-    return {"Message" : "Welcome to the Weather Prediction API!"}
+    return {"Message" : "Welcome to the Weather Prediction API!"} 
+
+@app.post("/predict")
+def predict(data: dict, model_type: str):
+    model = classification_model if model_type == "classification" else regression_model
+    input_data = np.array([data["features"]])
+    result = model.predict(input_data)[0]
+    return {"prediction": result}
 
 @app.post("/predict/classification")
 async def classify(input_data: PredictionInput):

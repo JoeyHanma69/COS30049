@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
+import { useState } from 'react';
+import reactLogo from './assets/react.svg';
+import viteLogo from './assets/vite.svg';
 import './App.css' 
 import InputForm from './Components/InputForm.jsx'; 
 import ErrorAlert from './Components/ErrorAlert.jsx'; 
