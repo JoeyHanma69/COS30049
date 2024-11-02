@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react'; 
-import { getOverview} from '../api';  
+import { getOverview} from '../api.js';  
 
 function Overview() { 
     const [overview, setOverview] = useState(null) 
     useEffect(() => { 
-        const Overview = async () => { 
+        const fetchOverview = async () => { 
             const data = await getOverview(); 
             setOverview(data);
         }; 
