@@ -2,8 +2,7 @@
   "name": "weather_report_prediction",
   "private": true,
   "version": "0.0.0",
-  "type": "module", 
-
+  "type": "module",
   "scripts": {
     "start": "set PORT=3000 && react-scripts start",
     "dev": "vite",
@@ -15,6 +14,7 @@
     "axios": "^1.7.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-router-dom": "^6.27.0",
     "react-scripts": "^5.0.1"
   },
   "devDependencies": {

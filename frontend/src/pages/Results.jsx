@@ -1,22 +1,21 @@
-import React from 'react'; 
+import React from 'react';
+import { useLocation } from 'react-router-dom';
 
+const Results = () => {
+  const { state } = useLocation();
+  
+  if (!state) {
+    return <div>No data available. Please go back and make a prediction.</div>;
+  }
 
-const Results = ({ predictionData }) => { 
-    if (!predictionData) {
-        return <div>No prediction data available.</div>;
-      } 
-      return (
-        <div>
-          <h1>Prediction Results</h1>
-          <p>{`Will it rain: ${predictionData.will_rain ? 'Yes' : 'No'}`}</p>
-          {predictionData.graph && (
-            <div>
-              <h3>Prediction Graph</h3>
-              <img src={`http://localhost:8000/${predictionData.graph}`} alt="Prediction Graph" />
-            </div>
-          )}
-        </div>
-      );
-}; 
+  return (
+    <div>
+      <h1>Prediction Results</h1>
+      <p>Will it Rain?: {state.classification_prediction ? 'Yes' : 'No'}</p>
+      <p>Predicted Rainfall Amount: {state.regression_prediction.toFixed(2)} mm</p>
+      <p>Cluster Group: {state.cluster}</p>
+    </div>
+  );
+};
 
 export default Results;

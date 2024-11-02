@@ -1,40 +1,32 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from sklearn.discriminant_analysis import StandardScaler
-from .model import load_model, preprocess_data
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+import pickle
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from fastapi.middleware.cors import CORSMiddleware
-import os
-from fastapi.responses import FileResponse
+from datetime import datetime
 
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Replace "*" with your frontend's origin if needed
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*"}})  # Allowing cross-origin requests from all origins
 
 # Load models
-classification_model = load_model("models/classification_model.pkl")
-regression_model = load_model("models/regression_model.pkl")
-kmeans_model = load_model("models/kmeans_model.pkl")
-dbscan_model = load_model("models/dbscan_model.pkl")
+with open('models/classification_model.pkl', 'rb') as f:
+    classification_model = pickle.load(f)
+with open('models/regression_model.pkl', 'rb') as f:
+    regression_model = pickle.load(f)
+with open('models/kmeans_model.pkl', 'rb') as f:
+    kmeans_model = pickle.load(f)
+with open('models/dbscan_model.pkl', 'rb') as f:
+    dbscan_model = pickle.load(f)
+with open('models/scaler.pkl', 'rb') as f:
+    scaler = pickle.load(f)
 
 
-# Define input data schema
-class PredictionInput(BaseModel):
-    temperature: float
-    humidity: float
+@app.route('/')
+def read_root():
+    return {"Message": "Welcome to the Weather Prediction API!"}
 
-@app.get("/")
-async def read_root():
-    return {"message": "Welcome to the Weather Prediction API!"}
-
-@app.get("/overview")
+@app.route('/overview', methods=['GET'])
 def get_overview():
     return {
         "title": "Weather Report Prediction Platform",
@@ -42,47 +34,62 @@ def get_overview():
         "target_users": "Professionals in weather-dependent industries like agriculture, event planning, and research."
     }
 
-@app.get("/features")
+@app.route('/features', methods=['GET'])
 def get_features():
     return {"features": ["Temperature prediction", "Rainfall prediction"]}
 
-@app.get("/models")
+@app.route('/models', methods=['GET'])
 def get_models():
     return {"models": ["Logistic Regression", "K-Means Clustering", "DBSCAN"]}
 
-@app.post("/predict_rain")
-def predict(input_data: PredictionInput): 
-    # Preprocess the data
-    input_features = np.array([[input_data.temperature, input_data.humidity]])
-    input_scaled = preprocess_data(input_features, None)
+@app.route('/predict', methods=['POST'])
+def predict():
+    data = request.json  # Receiving the data from the frontend and turning it into JSON
 
-    # Make a prediction using the loaded classification model
-    prediction = classification_model.predict(input_scaled)[0]
-    will_rain = prediction == 1
+    date = datetime.strptime(data['date'], '%Y-%m-%d')
+    temperature = data['temperature']
+    humidity = data['humidity']
 
-    # Generate a graph for the prediction
+    # Convert input data to DataFrame
+    input_data = pd.DataFrame({
+        'temperature': [temperature],
+        'humidity': [humidity],
+        'year': [date.year],
+        'month': [date.month]
+    })
+
+    # Preprocess input data
+    X_transformed = scaler.transform(input_data[['temperature', 'humidity']])
+
+    # Make predictions
+    classification_pred = classification_model.predict(X_transformed)[0]
+    regression_pred = regression_model.predict(X_transformed)[0]
+
+    # Perform clustering
+    cluster = kmeans_model.predict(X_transformed)[0]
+
+    # Generate a prediction graph
     plt.figure(figsize=(6, 4))
     x = np.linspace(0, 100, 100)
-    y = (input_data.humidity / 100) * x if will_rain else (input_data.temperature / 100) * x
+    y = (humidity / 100) * x if classification_pred else (temperature / 100) * x
     plt.plot(x, y, label="Prediction Curve", color="blue")
     plt.xlabel("X-axis (some feature)")
     plt.ylabel("Prediction value")
     plt.title("Weather Prediction Graph")
     plt.legend()
-    graph_path = "prediction_graph.png"
+    graph_path = "static/prediction_graph.png"
     plt.savefig(graph_path)
     plt.close()
 
-    return {"will_rain": will_rain, "graph": graph_path}
+    # Return the predictions
+    return jsonify({
+        'classification_prediction': int(classification_pred),
+        'regression_prediction': float(regression_pred),
+        'cluster': int(cluster),
+        'graph': graph_path
+    })
 
-@app.get("/graph")
-def get_graph():
-    graph_path = "prediction_graph.png"
-    if os.path.exists(graph_path):
-        return FileResponse(graph_path, media_type="image/png", filename="prediction_graph.png")
-    else:
-        raise HTTPException(status_code=404, detail="Graph not found") 
-    
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+if __name__ == '__main__':
+    app.run(debug=True, port=8000)
+
+
