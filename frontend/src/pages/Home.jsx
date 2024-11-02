@@ -7,7 +7,6 @@ const Home = () => {
     date: '',
     temperature: '',
     humidity: '',
-    solarExposure: '',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -22,7 +21,7 @@ const Home = () => {
     setLoading(true);
     setError(null);
     try { 
-        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+        const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
         const response = await fetch(`${API_URL}/predict`, {
         method: 'POST',
         headers: {
@@ -97,21 +96,6 @@ const Home = () => {
                 required
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 value={formData.humidity}
-                onChange={handleInputChange}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="solarExposure" className="block text-sm font-medium text-gray-700">
-                Solar Exposure (MJ/m²)
-              </label>
-              <input
-                id="solarExposure"
-                name="solarExposure"
-                type="number"
-                required
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                value={formData.solarExposure}
                 onChange={handleInputChange}
               />
             </div>

@@ -48,10 +48,6 @@ const Results = () => {
               <p className="text-sm text-gray-600">Humidity (%)</p>
               <p className="text-lg font-semibold">{weatherDetails.humidity}</p>
             </div>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Solar Exposure (MJ/m²)</p>
-              <p className="text-lg font-semibold">{weatherDetails.solarExposure}</p>
-            </div>
           </div>
         </div>
 
