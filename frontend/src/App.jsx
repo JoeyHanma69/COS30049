@@ -1,21 +1,32 @@
-import React from 'react';
-import Overview from './Components/Overview.js';
-import PredictionForm from './Components/PredictionModels.js';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import Results from './pages/Results';
 import './App.css';
 
 function App() {
-    return (
-        <div className="App">
-            <header className="App-header">
-                <h1>Weather Report Prediction Platform</h1>
-                <Overview />
-                <PredictionForm />
-            </header>
-        </div>
-    );
+  const [predictionData, setPredictionData] = useState(null);
+
+  return (
+    <Router>
+      <div>
+        <Routes>
+          <Route
+            path="/"
+            element={<Home setPredictionData={setPredictionData} />}
+          />
+          <Route
+            path="/results"
+            element={<Results predictionData={predictionData} />}
+          />
+        </Routes>
+      </div>
+    </Router>
+  );
 }
 
 export default App;
+
 
 
 
