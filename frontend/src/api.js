@@ -20,4 +20,14 @@ export const getModels = async () => {
         console.error('Error fetching models:', error);
         throw error;
     }
-};
+}; 
+
+export const predictRain = async (data) => { 
+    try { 
+        const response = await axios.post(`${API_BASE_URL}/predict_rain`);
+        return response.data;
+    } catch { 
+        console.error('Error making rain prediction',  error); 
+        throw error;
+    }
+}
