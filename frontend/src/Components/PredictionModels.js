@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { predictRain } from '../api.js'; // Make sure the path is correct and that the API function works as expected
+import { predictRain } from '../api.js'; // Ensure correct import with the proper file path
 
 function PredictionForm() {
     const [temperature, setTemperature] = useState('');
@@ -15,7 +15,7 @@ function PredictionForm() {
             const result = await predictRain({ temperature: parseFloat(temperature), humidity: parseFloat(humidity) });
 
             // Set the result (assuming the backend returns a 'will_rain' boolean)
-            setPrediction(result.will_rain ? 'It will rain' : 'It will not rain');
+            setPrediction(result ? 'It will rain' : 'It will not rain');
             setError(''); // Clear any previous error messages
         } catch (err) {
             // Set an error message if the prediction fails
