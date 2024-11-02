@@ -11,7 +11,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Replace "*" with your frontend's origin if needed
+    allow_origins=["http://localhost:3000/"],  # Replace "*" with your frontend's origin if needed
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -80,4 +80,8 @@ def get_graph():
     if os.path.exists(graph_path):
         return FileResponse(graph_path, media_type="image/png", filename="prediction_graph.png")
     else:
-        raise HTTPException(status_code=404, detail="Graph not found")
+        raise HTTPException(status_code=404, detail="Graph not found") 
+    
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=3000)
