@@ -3,14 +3,24 @@ import { get_models } from '../api.js';
 
 function Models() {
     const [models, setModels] = useState([]);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchModels = async () => {
-            const data = await get_models();
-            setModels(data.models);
+            try {
+                const data = await get_models();
+                setModels(data.models);
+                setError(null); // Clear previous errors if any
+            } catch (err) {
+                console.error('Error fetching models:', err);
+                setError('Failed to load models. Please try again later.');
+            }
         };
         fetchModels();
     }, []);
+
+    if (error) return <div style={{ color: 'red' }}>{error}</div>;
+    if (!models.length) return <div>Loading...</div>;
 
     return (
         <div>
@@ -27,3 +37,4 @@ function Models() {
 }
 
 export default Models;
+
