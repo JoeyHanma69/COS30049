@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from sklearn.discriminant_analysis import StandardScaler
 from .model import load_model, preprocess_data
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,7 +12,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000/"],  # Replace "*" with your frontend's origin if needed
+    allow_origins=["*"],  # Replace "*" with your frontend's origin if needed
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -50,10 +51,10 @@ def get_models():
     return {"models": ["Logistic Regression", "K-Means Clustering", "DBSCAN"]}
 
 @app.post("/predict_rain")
-def predict(input_data: PredictionInput):
+def predict(input_data: PredictionInput): 
     # Preprocess the data
     input_features = np.array([[input_data.temperature, input_data.humidity]])
-    input_scaled = preprocess_data(input_features, scaler)
+    input_scaled = preprocess_data(input_features, None)
 
     # Make a prediction using the loaded classification model
     prediction = classification_model.predict(input_scaled)[0]
@@ -84,4 +85,4 @@ def get_graph():
     
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=3000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
