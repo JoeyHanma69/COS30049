@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8000'; // Ensure it matches your backend URL
+const API_BASE_URL = 'http://localhost:8000'; // Ensure it matches your backend
 
 export const get_features = async () => {
     try {
