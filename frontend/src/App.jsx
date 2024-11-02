@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import reactLogo from './assets/react.svg';
 import viteLogo from './assets/vite.svg';
-import './App.css' 
+import './App.css';
 import InputForm from './Components/InputForm.jsx'; 
 import ErrorAlert from './Components/ErrorAlert.jsx'; 
 import DisplayResults from './Components/DisplayResults.jsx'; 
-import { classifyWeather, regressWeather} from './api.js';
+import { classifyWeather, regressWeather } from './api.js';
 
 function App() {
   const [count, setCount] = useState(0); 
@@ -13,28 +13,28 @@ function App() {
   const [result, setResult] = useState(''); 
 
   const handlePrediction = async (inputData, type) => { 
-      try { 
-        let prediction; 
-        if (type === 'classification') { 
-          prediction = await classifyWeather(inputData);
-        } else { 
-          prediction = await regressWeather(inputData);
-        } 
-        setResult('Prediction (${type}): ${prediction}'); 
-        setError('');
-      } catch (err) { 
-        setError(err); 
-        setResult('');
-      }
+    try { 
+      let prediction; 
+      if (type === 'classification') { 
+        prediction = await classifyWeather(inputData);
+      } else { 
+        prediction = await regressWeather(inputData);
+      } 
+      setResult(`Prediction (${type}): ${prediction}`); 
+      setError('');
+    } catch (err) { 
+      setError(err.message); 
+      setResult('');
+    }
   };
 
   return (
     <>
       <div>
-        <a href="https://vite.dev" target="_blank">
+        <a href="https://vite.dev" target="_blank" rel="noopener noreferrer">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
-        <a href="https://react.dev" target="_blank">
+        <a href="https://react.dev" target="_blank" rel="noopener noreferrer">
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
@@ -52,11 +52,13 @@ function App() {
       </p>  
 
       {/* Weather Prediction Components */}
-      <InputForm onSubmit={handlePrediction} />
+      <InputForm setError={setError} setResult={setResult} /> {/* Correctly passing setError and setResult */}
       <ErrorAlert message={error} onClose={() => setError('')} />
-      <ResultDisplay result={result} />
+      <DisplayResults result={result} />
     </>
   )
 }
 
 export default App;
+
+

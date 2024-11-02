@@ -1,4 +1,4 @@
-import React, { uesState } from 'react'; 
+import React, { useState } from 'react'; 
 import { classifyWeather, regressWeather } from '../api'; 
   
 const InputForm = ({ setError, setResult }) => {
