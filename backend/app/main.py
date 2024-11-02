@@ -18,11 +18,11 @@ app.add_middleware(
 )
 
 # Load models
-classification_model = load_model(r"C:\Users\cucum\Downloads\COS30049\assignment 2\classification_model.pkl")
-regression_model = load_model(r"C:\Users\cucum\Downloads\COS30049\assignment 2\regression_model.pkl")
+classification_model = load_model("models/classification_model.pkl")
+regression_model = load_model("models/regression_model.pkl")
 kmeans_model = load_model("models/kmeans_model.pkl")
 dbscan_model = load_model("models/dbscan_model.pkl")
-scaler = load_model("models/scaler.pkl")
+
 
 # Define input data schema
 class PredictionInput(BaseModel):
