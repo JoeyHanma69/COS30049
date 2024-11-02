@@ -37,25 +37,13 @@ def get_overview():
         "target_users": "Professionals in weather-dependent industries like agriculture, event planning, and research."
         } 
     
-@app.get("/features") 
-def get_features(): 
-    return {  
-            'features' : [  
-                        "Predicts temperature, rainfall, and solar exposure",
-                        "Interactive and user-friendly platform",
-                        "Uses Logistic Regression, K-Means, and DBSCAN models for predictions"
-                ]
-            } 
-    
-@app.get("/models") 
-def get_models(): 
-    return { 
-            'models': [  
-                {"name": "Logistic Regression", "type": "Classification", "use_case": "Predict whether it will rain"},
-                {"name": "K-Means", "type": "Clustering", "use_case": "Group weather data based on temperature and rainfall"},
-                {"name": "DBSCAN", "type": "Anomaly Detection", "use_case": "Identify anomalies in weather data"}
-                ]
-            }  
+@app.get("/features")
+def get_features():
+    return {"features": ["Temperature prediction", "Rainfall prediction"]}
+
+@app.get("/models")
+def get_models():
+    return {"models": ["Logistic Regression", "K-Means Clustering", "DBSCAN"]}
     
 @app.post("/predict_rain")
 def predict(temperature: float, humidity: float):
