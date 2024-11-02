@@ -3,8 +3,13 @@ import axios from 'axios';
 const API_BASE_URL = 'http://localhost:8000'; // URL of your FastAPI backend
 
 export const getOverview = async () => {
-    const response = await axios.get(`${API_BASE_URL}/overview`);
-    return response.data;
+    try {
+        const response = await axios.get(`${API_BASE_URL}/overview`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching overview:', error);
+        throw error;
+    }
 };
 
 export const getFeatures = async () => {
