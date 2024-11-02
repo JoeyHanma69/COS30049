@@ -6,7 +6,7 @@
   "proxy": "http://localhost:8000",
 
   "scripts": {
-    "start": "react-scripts start",
+    "start": "set PORT=8000 && react-scripts start",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",

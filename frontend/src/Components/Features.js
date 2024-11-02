@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { getFeatures } from '../api.js';
+import { get_features } from '../api.js';
 
 function Features() {
     const [features, setFeatures] = useState([]);
 
     useEffect(() => {
         const fetchFeatures = async () => {
-            const data = await getFeatures();
+            const data = await get_features();
             setFeatures(data.features);
         };
         fetchFeatures();

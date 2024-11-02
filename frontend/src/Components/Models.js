@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { getModels } from '../api.js';
+import { get_models } from '../api.js';
 
 function Models() {
     const [models, setModels] = useState([]);
 
     useEffect(() => {
         const fetchModels = async () => {
-            const data = await getModels();
+            const data = await get_models();
             setModels(data.models);
         };
         fetchModels();

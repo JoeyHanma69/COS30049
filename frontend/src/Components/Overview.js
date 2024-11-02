@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'; 
-import { getFeatures, getMdoels } from '../api.js';  
+import { get_features, get_models } from '../api.js';  
 
 function Overview() { 
     const [features, setFeatures] = useState(null);  
@@ -9,7 +9,7 @@ function Overview() {
     useEffect(() => { 
         const fetchFeatures = async () => { 
             try { 
-                const data = await getFeatures(); 
+                const data = await get_features(); 
                 setFeatures(data.features); 
                 setError(null);
             } catch (error) { 
@@ -19,11 +19,11 @@ function Overview() {
         };  
         const fetchModels = async () => { 
             try { 
-                const data = await getModels() 
+                const data = await get_models() 
                 setModels(data.models); 
                 setError(null);
             } catch (error) { 
-                console.error('Error fetching mdoels: ', error) 
+                console.error('Error fetching models: ', error) 
                 setError('Failed to load features. Please try again later.');
             }
         };
@@ -32,7 +32,7 @@ function Overview() {
     }, []);   
 
     if (error) return <div style={{ color: 'red' }}>{error}</div>;
-    if (!overview) return <div>Loading...</div>;
+    if (!!features || !models) return <div>Loading...</div>;
 
     return (
         <div>
