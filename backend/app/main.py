@@ -2,7 +2,8 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from .model import load_model, predict
 import pandas as pd  
-import numpy as np
+import numpy as np 
+import matplotlib.pyplot as plt
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI() 
@@ -54,32 +55,25 @@ def get_models():
                 {"name": "K-Means", "type": "Clustering", "use_case": "Group weather data based on temperature and rainfall"},
                 {"name": "DBSCAN", "type": "Anomaly Detection", "use_case": "Identify anomalies in weather data"}
                 ]
-            } 
-@app.post("/predict")
-def predict(data: dict, model_type: str):
-    model = classification_model if model_type == "classification" else regression_model
-    input_data = np.array([data["features"]])
-    result = model.predict(input_data)[0]
-    return {"prediction": result}
+            }  
+    
+@app.post("/predict_rain")
+def predict(temperature: float, humidity: float):
+    will_rain = temperature < 25 and humidity > 50 
+    
+    plt.figure(figsize=(6,4)) 
+    x = np.linspace(0, 100, 100) 
+    y = (humidity/ 100) * x if will_rain else (temperature / 100) * x 
+    plt.plot(x, y, label="Prediction Curve", color="blue")
+    plt.xlabel("X-axis (some feature)")
+    plt.ylabel("Prediction value")
+    plt.title("Weather Prediction Graph")
+    plt.legend()
+    graph_path = "prediction_graph.png"
+    plt.savefig(graph_path)
+    plt.close()
 
-@app.post("/predict/classification")
-async def classify(input_data: PredictionInput):
-    try:
-        # Prepare data for prediction
-        data = [[input_data.temperature, input_data.humidity]]
-        # Call the predict function with the classification model
-        prediction = predict(classification_model, data, model_type='classification')
-        return {"prediction": prediction}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return {"will_rain": will_rain, "graph": graph_path}
 
-@app.post("/predict/regression")
-async def regress(input_data: PredictionInput):
-    try:
-        # Prepare data for prediction
-        data = [[input_data.temperature, input_data.humidity]]
-        # Call the predict function with the regression model
-        prediction = predict(regression_model, data, model_type='regression')
-        return {"prediction": prediction}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+
+    
