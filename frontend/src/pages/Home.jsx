@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios'; 
+import './Home.css';
 
 const Home = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     date: '',
-    temperature: '',
-    humidity: '',
+    humidity: 32.0,
+    temperature: 32.0
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -20,27 +22,31 @@ const Home = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    // console.log( formData.date);
+
     try { 
         // const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';  
-        const API_URL = 'http://127.0.0.1:8000'
-        const response = await fetch(`${API_URL}/predict`, {
-        method: 'POST',
-        //headers: {
-          //'Content-Type': 'application/json',
-        //},
-        body: JSON.stringify(formData),
-      });
-      
+      const API_URL = 'http://127.0.0.1:8000'
+
+      const response = await axios.post(`${API_URL}/predict`, formData);
+      console.log(response.data)
+
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
       const data = await response.json();
       navigate('/results', { state: { prediction: data, weatherDetails: formData } });
-    } catch (error) {
+    } 
+    
+    catch (error) {
       console.error('Error making prediction:', error);
       setError('Failed to get prediction. Please try again.');
-    } finally {
+    } 
+    
+    finally {
       setLoading(false);
     }
   };
@@ -73,7 +79,7 @@ const Home = () => {
 
             <div>
               <label htmlFor="temperature" className="block text-sm font-medium text-gray-700">
-                Temperature (°C)
+                Temperature (Â°C)
               </label>
               <input
                 id="temperature"
