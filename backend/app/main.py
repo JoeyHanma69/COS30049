@@ -20,11 +20,11 @@ app.add_middleware(
 )
 
 # Load models using joblib
-classification_model = joblib.load('./models/classification_model.pkl')
-regression_model = joblib.load('./models/regression_model.pkl')
-kmeans_model = joblib.load('./models/kmeans_model.pkl')
-dbscan_model = joblib.load('./models/dbscan_model.pkl')
-scaler = joblib.load('./models/scaler.pkl')
+classification_model = joblib.load('./app/models/classification_model.pkl')
+regression_model = joblib.load('./app/models/regression_model.pkl')
+kmeans_model = joblib.load('./app/models/kmeans_model.pkl')
+dbscan_model = joblib.load('./app/models/dbscan_model.pkl')
+scaler = joblib.load('./app/models/scaler.pkl')
 
 # Define input model using Pydantic
 class PredictionRequest(BaseModel):
