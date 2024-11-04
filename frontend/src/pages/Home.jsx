@@ -52,18 +52,18 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200 flex items-center justify-center px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-2xl">
+    <div>
+      <div>
         <div>
-          <h2 className="text-center text-3xl font-extrabold text-gray-900">
+          <h2>
             Weather Prediction
           </h2>
         </div>
         
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm space-y-4">
+        <form onSubmit={handleSubmit}>
+          <div>
             <div>
-              <label htmlFor="date" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="date">
                 Date
               </label>
               <input
@@ -71,14 +71,13 @@ const Home = () => {
                 name="date"
                 type="date"
                 required
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 value={formData.date}
                 onChange={handleInputChange}
               />
             </div>
 
             <div>
-              <label htmlFor="temperature" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="temperature">
                 Temperature (Â°C)
               </label>
               <input
@@ -86,14 +85,13 @@ const Home = () => {
                 name="temperature"
                 type="number"
                 required
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 value={formData.temperature}
                 onChange={handleInputChange}
               />
             </div>
 
             <div>
-              <label htmlFor="humidity" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="humidity">
                 Humidity (%)
               </label>
               <input
@@ -101,7 +99,6 @@ const Home = () => {
                 name="humidity"
                 type="number"
                 required
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 value={formData.humidity}
                 onChange={handleInputChange}
               />
@@ -109,7 +106,7 @@ const Home = () => {
           </div>
 
           {error && (
-            <div className="text-red-600 text-sm mt-2">
+            <div>
               {error}
             </div>
           )}
@@ -118,7 +115,6 @@ const Home = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
             >
               {loading ? 'Predicting...' : 'Predict Weather'}
             </button>
@@ -130,3 +126,4 @@ const Home = () => {
 };
 
 export default Home;
+
