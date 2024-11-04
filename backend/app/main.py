@@ -10,18 +10,13 @@ from datetime import datetime
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})  # Allowing cross-origin requests from all origins
 
-# Load models
-with open('backend/models/classification_model.pkl', 'rb') as f:
-    # classification_model = pickle.load(f) 
-    classification_model = joblib.load(f)
-with open('backend/models/regression_model.pkl', 'rb') as f:
-    regression_model = pickle.load(f)
-with open('backend/models/kmeans_model.pkl', 'rb') as f:
-    kmeans_model = pickle.load(f)
-with open('backend/models/dbscan_model.pkl', 'rb') as f:
-    dbscan_model = pickle.load(f)
-with open('backend/models/scaler.pkl', 'rb') as f:
-    scaler = pickle.load(f)
+# Load models using joblib
+classification_model = joblib.load(r'C:\Users\cucum\OneDrive\Documents\GitHub\Weather-Report-Prediction\backend\app\models\abdo_loves_child_po.pkl')
+regression_model = joblib.load('app/models/regression_model.pkl')
+kmeans_model = joblib.load('app/models/kmeans_model.pkl')
+dbscan_model = joblib.load('app/models/dbscan_model.pkl')
+scaler = joblib.load('app/models/scaler.pkl')
+
 
 
 @app.route('/')
