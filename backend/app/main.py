@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import pickle
+import pickle 
+import joblib
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,7 +12,8 @@ CORS(app, resources={r"/*": {"origins": "*"}})  # Allowing cross-origin requests
 
 # Load models
 with open('backend/models/classification_model.pkl', 'rb') as f:
-    classification_model = pickle.load(f)
+    # classification_model = pickle.load(f) 
+    classification_model = joblib.load(f)
 with open('backend/models/regression_model.pkl', 'rb') as f:
     regression_model = pickle.load(f)
 with open('backend/models/kmeans_model.pkl', 'rb') as f:
