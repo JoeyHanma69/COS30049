@@ -10,15 +10,15 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})  # Allowing cross-origin requests from all origins
 
 # Load models
-with open('models/classification_model.pkl', 'rb') as f:
+with open('backend/models/classification_model.pkl', 'rb') as f:
     classification_model = pickle.load(f)
-with open('models/regression_model.pkl', 'rb') as f:
+with open('backend/models/regression_model.pkl', 'rb') as f:
     regression_model = pickle.load(f)
-with open('models/kmeans_model.pkl', 'rb') as f:
+with open('backend/models/kmeans_model.pkl', 'rb') as f:
     kmeans_model = pickle.load(f)
-with open('models/dbscan_model.pkl', 'rb') as f:
+with open('backend/models/dbscan_model.pkl', 'rb') as f:
     dbscan_model = pickle.load(f)
-with open('models/scaler.pkl', 'rb') as f:
+with open('backend/models/scaler.pkl', 'rb') as f:
     scaler = pickle.load(f)
 
 
@@ -79,7 +79,9 @@ def predict():
     plt.legend()
     graph_path = "static/prediction_graph.png"
     plt.savefig(graph_path)
-    plt.close()
+    plt.close() 
+    
+    print(request.json)
 
     # Return the predictions
     return jsonify({
