@@ -78,7 +78,7 @@ const Home = () => {
       </div> 
 
       <div className="form-box">
-        <h1 className="form-title">Weather Prediction Platform</h1>
+        <h1 className="form-title">Time to plan ahead</h1>
         <p className="form-description">Enter the details below to predict if it will rain today based on historical weather data.</p>
 
         <form onSubmit={handleSubmit} className="input-form">
