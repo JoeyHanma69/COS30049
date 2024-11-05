@@ -1,85 +1,84 @@
 import React, { useEffect, useState } from 'react';
-import Plot from 'react-plotly.js';  
+import Plot from 'react-plotly.js';
 import { useNavigate } from 'react-router-dom';
-import Papa from 'papaparse'; // Import PapaParse for CSV parsing
+import * as d3 from 'd3';
 import './Style.css';
 
-const Classification = () => { 
+const Classification = () => {
   const navigate = useNavigate();
-  const [data, setData] = useState(null); 
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // Load dataset from CSV file using D3
+    d3.csv('/cleaned_dataset.csv')
+      .then((data) => {
+        if (data && data.length > 0) {
+          console.log("Raw Data Loaded:", data);
+          const formattedData = data.map(d => ({
+            temperature: parseFloat(d['Temperature (°C)']),
+            humidity: parseFloat(d['Humidity (%)']),
+            class: d['Class'] ? parseInt(d['Class']) : null // assuming you have class labels in your CSV
+          }));
+
+          setData(formattedData);
+        } else {
+          setError("No data found in the CSV file.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error loading CSV data:", error);
+        setError("Error loading the dataset. Please check the CSV path and format.");
+      });
+  }, []);
 
   const handleNavigation = (path) => {
     navigate(path);
-  }; 
-
-  useEffect(() => {
-    // Load CSV data from public folder
-    Papa.parse(process.env.PUBLIC_URL + '/cleaned_dataset.csv', {
-      header: true,
-      download: true,
-      complete: (result) => {
-        const rows = result.data;
-
-        const temperature = [];
-        const humidity = [];
-        const classifications = [];
-
-        rows.forEach((row) => {
-          if (row['Temperature (°C)'] && row['Humidity (%)']) {
-            temperature.push(parseFloat(row['Temperature (°C)']));
-            humidity.push(parseFloat(row['Humidity (%)']));
-
-            // Simple mock classification logic for visualization (e.g., if humidity > 50, classify as 1)
-            const classification = parseFloat(row['Humidity (%)']) > 50 ? 1 : 0;
-            classifications.push(classification);
-          }
-        });
-
-        setData({
-          temperature,
-          humidity,
-          classifications
-        });
-      },
-    });
-  }, []);
+  };
 
   return (
-    <div className="classification-container">
+    <div className="classification-model-container">
       <h1 className="classification-title">Classification Model Analysis</h1>
       <p className="classification-description">See how the classification model categorizes temperature and humidity data into different classes.</p>
-      {data && (
-        <Plot
-          data={[
-            {
-              x: data.temperature,
-              y: data.humidity,
-              mode: 'markers',
-              marker: {
-                color: data.classifications,
-                colorscale: 'Viridis',
-                size: 10,
-              },
-              type: 'scatter',
-              name: 'Temperature vs Humidity Classification'
-            }
-          ]}
-          layout={{
-            title: 'Temperature vs Humidity Classification',
-            xaxis: { title: 'Temperature (°C)' },
-            yaxis: { title: 'Humidity (%)' },
-            hovermode: 'closest'
-          }}
-        />
-      )}
+      
+      {error && <p className="error-message">{error}</p>}
+
+      <div className="classification-content">
+        {data ? (
+          <Plot
+            data={[
+              {
+                x: data.map(d => d.temperature),
+                y: data.map(d => d.humidity),
+                type: 'scatter',
+                mode: 'markers',
+                marker: { color: 'blue' },
+                name: 'Temperature vs Humidity'
+              }
+            ]}
+            layout={{
+              title: 'Temperature vs Humidity Classification',
+              xaxis: { title: 'Temperature (°C)' },
+              yaxis: { title: 'Humidity (%)' },
+              hovermode: 'closest'
+            }}
+          />
+        ) : (
+          <p>Loading data...</p>
+        )}
+      </div>
+
+      {/* Navigation Buttons */}
       <div className="button-group professional">
         <button onClick={() => handleNavigation('/')} className="nav-button professional">Home</button>
         <button onClick={() => handleNavigation('/regression')} className="nav-button professional">Regression Model</button>
-        <button onClick={() => handleNavigation('/classification')} className="nav-button professional">Classification Model</button>
+        <button onClick={() => handleNavigation('/eda')} className="nav-button professional">EDA Analysis</button>
       </div>
     </div>
   );
 };
 
 export default Classification;
+
+
 

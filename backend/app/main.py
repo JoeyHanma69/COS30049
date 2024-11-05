@@ -22,11 +22,11 @@ app.add_middleware(
 )
 
 # Load models using joblib
-classification_model = joblib.load('backend/app/models/classification_model.pkl')
-regression_model = joblib.load('backend/app/models/regression_model.pkl')
-kmeans_model = joblib.load('backend/app/models/kmeans_model.pkl')
-dbscan_model = joblib.load('backend/app/models/dbscan_model.pkl')
-scaler = joblib.load('backend/app/models/scaler.pkl')
+classification_model = joblib.load('./app/models/classification_model.pkl')
+regression_model = joblib.load('./app/models/regression_model.pkl')
+kmeans_model = joblib.load('./app/models/kmeans_model.pkl')
+dbscan_model = joblib.load('./app/models/dbscan_model.pkl')
+scaler = joblib.load('./app/models/scaler.pkl')
 
 # Example dataset for regression analysis
 df = pd.read_csv(r"C:\Users\cucum\Downloads\COS30049\assignment 2\cleaned_dataset.csv")
@@ -123,7 +123,8 @@ async def get_regression_data():
             "predictedRainfall": y_pred.tolist()
         }
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) 
+    
 
  
 # Run with: uvicorn main:app --reload
