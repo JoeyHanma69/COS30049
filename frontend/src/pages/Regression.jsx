@@ -72,7 +72,8 @@ const Regression = () => {
       <div className="button-group professional">
         <button onClick={() => handleNavigation('/')} className="nav-button professional">Home</button>
         <button onClick={() => handleNavigation('/eda')} className="nav-button professional">EDA</button>
-        <button onClick={() => handleNavigation('/classification')} className="nav-button professional">Classification Model</button>
+        <button onClick={() => handleNavigation('/classification')} className="nav-button professional">Classification</button> 
+        <button onClick={() => handleNavigation('/clustering')} className="nav-button professional">Clustering</button> 
       </div>
     </div>
   );

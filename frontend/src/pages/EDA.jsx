@@ -164,8 +164,9 @@ const EDA = () => {
       {/* Navigation Buttons */}
       <div className="button-group professional">
         <button onClick={() => handleNavigation('/')} className="nav-button professional">Home</button>
-        <button onClick={() => handleNavigation('/regression')} className="nav-button professional">Regression Model</button>
-        <button onClick={() => handleNavigation('/classification')} className="nav-button professional">Classification Model</button>
+        <button onClick={() => handleNavigation('/regression')} className="nav-button professional">Regression</button>
+        <button onClick={() => handleNavigation('/classification')} className="nav-button professional">Classification</button> 
+        <button onClick={() => handleNavigation('/clustering')} className="nav-button professional">Clustering</button> 
       </div>
     </div>
   );

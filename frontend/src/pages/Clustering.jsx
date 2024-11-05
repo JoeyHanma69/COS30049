@@ -116,8 +116,8 @@ const Clustering = () => {
       <div className="button-group professional">
         <button onClick={() => handleNavigation('/')} className="nav-button professional">Home</button> 
         <button onClick={() => handleNavigation('/eda')} className="nav-button professional">EDA</button>
-        <button onClick={() => handleNavigation('/regression')} className="nav-button professional">Regression Model</button>
-        <button onClick={() => handleNavigation('/classification')} className="nav-button professional">Classification Model</button>
+        <button onClick={() => handleNavigation('/regression')} className="nav-button professional">Regression</button>
+        <button onClick={() => handleNavigation('/classification')} className="nav-button professional">Classification</button>
       </div>
     </div>
   );
