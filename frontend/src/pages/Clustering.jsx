@@ -232,7 +232,7 @@ const Clustering = () => {
           </div>
 
           <button type="submit" className="submit-button">
-            {loading ? 'Clustering...' : 'Perform Clustering'}
+            {loading ? 'Clustering...' : 'Will it rain via clustering?'}
           </button>
         </form>
       </div>

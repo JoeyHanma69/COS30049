@@ -75,6 +75,27 @@ const EDA = () => {
       <p className="eda-description">Understand the underlying patterns in the dataset by exploring different visualizations.</p>
 
       <div className="eda-content">
+        {/* Boxplot for Rainfall Amount by Day */}
+        {rainfallData && (
+          <Plot
+            data={[
+              {
+                x: rainfallData.map(d => d.day),
+                y: rainfallData.map(d => d.rainfallAmount),
+                type: 'box',
+                name: 'Rainfall Amount by Day',
+                marker: { color: 'blue' }
+              }
+            ]}
+            layout={{
+              title: 'Rainfall Amount by Day',
+              xaxis: { title: 'Day' },
+              yaxis: { title: 'Rainfall (mm)' },
+              hovermode: 'closest'
+            }}
+          />
+        )}
+
         {/* Boxplot for Rainfall Amount by Month */}
         {rainfallData && (
           <Plot
@@ -83,12 +104,12 @@ const EDA = () => {
                 x: rainfallData.map(d => d.month),
                 y: rainfallData.map(d => d.rainfallAmount),
                 type: 'box',
-                name: 'Rainfall Amount by Month',
-                marker: { color: 'blue' }
+                name: 'Rainfall Amount by Period',
+                marker: { color: 'green' }
               }
             ]}
             layout={{
-              title: 'Rainfall Amount by Month',
+              title: 'Rainfall Amount vs Month',
               xaxis: { title: 'Month' },
               yaxis: { title: 'Rainfall (mm)' },
               hovermode: 'closest'
@@ -96,43 +117,22 @@ const EDA = () => {
           />
         )}
 
-        {/* Boxplot for Rainfall Amount by Period of Measurement */}
+        {/* Scatter Plot of Rainfall vs Year */}
         {rainfallData && (
           <Plot
             data={[
               {
-                x: rainfallData.map(d => d.period),
-                y: rainfallData.map(d => d.rainfallAmount),
-                type: 'box',
-                name: 'Rainfall Amount by Period',
-                marker: { color: 'green' }
-              }
-            ]}
-            layout={{
-              title: 'Rainfall Amount vs Period of Measurement',
-              xaxis: { title: 'Period (days)' },
-              yaxis: { title: 'Rainfall (mm)' },
-              hovermode: 'closest'
-            }}
-          />
-        )}
-
-        {/* Scatter Plot of Rainfall vs Period */}
-        {rainfallData && (
-          <Plot
-            data={[
-              {
-                x: rainfallData.map(d => d.period),
+                x: rainfallData.map(d => d.year),
                 y: rainfallData.map(d => d.rainfallAmount),
                 type: 'scatter',
                 mode: 'markers',
                 marker: { color: 'red' },
-                name: 'Rainfall vs Period'
+                name: 'Rainfall vs Year'
               }
             ]}
             layout={{
-              title: 'Rainfall Amount vs Period of Measurement',
-              xaxis: { title: 'Period (days)' },
+              title: 'Rainfall Amount vs Year',
+              xaxis: { title: 'Year' },
               yaxis: { title: 'Rainfall (mm)' },
               hovermode: 'closest'
             }}

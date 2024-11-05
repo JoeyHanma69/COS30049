@@ -8,60 +8,6 @@ import './Style.css';  // Assuming you have a Home.css file for styling
 
 const Home = () => {   
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    year: '',
-    month: '',
-    day: '',
-    rainfall: '',
-    period: ''
-  }); 
-  const [errors, setErrors] = useState({}); 
-  const [loading, setLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };  
- 
-  const validateInputs = () => {
-    let validationErrors = {};
-    if (!formData.year || formData.year < 2000 || formData.year > new Date().getFullYear()) {
-      validationErrors.year = "Please enter a valid year.";
-    }
-    if (!formData.month || formData.month < 1 || formData.month > 12) {
-      validationErrors.month = "Please enter a valid month (1-12).";
-    }
-    if (!formData.day || formData.day < 1 || formData.day > 31) {
-      validationErrors.day = "Please enter a valid day (1-31).";
-    }
-    if (!formData.rainfall || formData.rainfall < 0) {
-      validationErrors.rainfall = "Please enter a valid rainfall amount (must be 0 or greater).";
-    }
-    if (!formData.period || formData.period < 0) {
-      validationErrors.period = "Please enter a valid period (must be 0 or greater).";
-    }
-    return validationErrors;
-  }; 
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const validationErrors = validateInputs();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-    setErrors({});
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      const willRain = formData.rainfall >= 1;
-      alert(willRain ? "It will rain today." : "It will not rain today.");
-      setSuccessMessage("Prediction complete! Check the alert for results.");
-      setFormData({ year: '', month: '', day: '', rainfall: '', period: '' });
-    }, 1000); // Simulate processing delay
-  };
-
 
   const handleNavigation = (path) => {
     navigate(path);
@@ -72,7 +18,7 @@ const Home = () => {
       {/* Hero Section with Background Image */}
       <div className="hero-section" style={{ backgroundImage: `url(${heroImage})` }}>
         <div className="hero-overlay">
-          <h1 className="hero-title">Melbourne Olympic Park Weather Predictions</h1>
+          <h1 className="hero-title">Melbourne Olympic Park Rainfall</h1>
           <p className="hero-subtitle">Stay ahead with accurate weather insights for Melbourne Olympic Park.</p>
         </div>
       </div>
@@ -106,84 +52,6 @@ const Home = () => {
         <p>View historical trends in temperature, humidity, and more to better understand weather patterns.</p>
       </div> 
 
-      <div className="form-box">
-        <h1 className="form-title">Time to plan ahead of time</h1>
-        <p className="form-description">Enter the details below to predict if it will rain today based on historical weather data.</p>
-
-        {successMessage && <div className="success-message">{successMessage}</div>}
-
-        <form onSubmit={handleSubmit} className="input-form">
-          <div className="form-group">
-            <label htmlFor="year">Year</label>
-            <input
-              type="number"
-              id="year"
-              name="year"
-              value={formData.year}
-              onChange={handleInputChange}
-              required
-              className={errors.year ? 'input-error' : 'input-valid'}
-            />
-            {errors.year && <span className="error-message">{errors.year}</span>}
-          </div>
-          <div className="form-group">
-            <label htmlFor="month">Month</label>
-            <input
-              type="number"
-              id="month"
-              name="month"
-              value={formData.month}
-              onChange={handleInputChange}
-              required
-              className={errors.month ? 'input-error' : 'input-valid'}
-            />
-            {errors.month && <span className="error-message">{errors.month}</span>}
-          </div>
-          <div className="form-group">
-            <label htmlFor="day">Day</label>
-            <input
-              type="number"
-              id="day"
-              name="day"
-              value={formData.day}
-              onChange={handleInputChange}
-              required
-              className={errors.day ? 'input-error' : 'input-valid'}
-            />
-            {errors.day && <span className="error-message">{errors.day}</span>}
-          </div>
-          <div className="form-group">
-            <label htmlFor="rainfall">Rainfall Amount (mm)</label>
-            <input
-              type="number"
-              id="rainfall"
-              name="rainfall"
-              value={formData.rainfall}
-              onChange={handleInputChange}
-              required
-              className={errors.rainfall ? 'input-error' : 'input-valid'}
-            />
-            {errors.rainfall && <span className="error-message">{errors.rainfall}</span>}
-          </div>
-          <div className="form-group">
-            <label htmlFor="period">Period over which rainfall was measured (days)</label>
-            <input
-              type="number"
-              id="period"
-              name="period"
-              value={formData.period}
-              onChange={handleInputChange}
-              required
-              className={errors.period ? 'input-error' : 'input-valid'}
-            />
-            {errors.period && <span className="error-message">{errors.period}</span>}
-          </div>
-
-          <button type="submit" className="submit-button" disabled={loading}>
-            {loading ? 'Predicting...' : 'Predict Rainfall'}
-          </button>
-        </form>
-      </div>
 
       {/* Navigation Section with Icons */}
       <div className="navigation-box professional">
