@@ -4,10 +4,7 @@ from pydantic import BaseModel
 from datetime import datetime
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 import joblib
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
 
 # Initialize FastAPI app
 app = FastAPI()
@@ -25,14 +22,7 @@ app.add_middleware(
 classification_model = joblib.load('./app/models/classification_model.pkl')
 regression_model = joblib.load('./app/models/regression_model.pkl')
 kmeans_model = joblib.load('./app/models/kmeans_model.pkl')
-dbscan_model = joblib.load('./app/models/dbscan_model.pkl')
 scaler = joblib.load('./app/models/scaler.pkl')
-
-# Example dataset for regression analysis
-df = pd.read_csv(r"C:\Users\cucum\Downloads\COS30049\assignment 2\cleaned_dataset.csv")
-X = df[['Year', 'Month', 'Day', 'Period over which rainfall was measured (days)']]
-y = df['Rainfall amount (millimetres)']
-X.fillna(X.median(), inplace=True)
 
 # Define input model using Pydantic
 class PredictionRequest(BaseModel):
@@ -55,10 +45,6 @@ async def get_overview():
 @app.get("/features")
 async def get_features():
     return {"features": ["Temperature prediction", "Rainfall prediction"]}
-
-@app.get("/models")
-async def get_models():
-    return {"models": ["Logistic Regression", "K-Means Clustering", "DBSCAN"]}
 
 @app.post("/predict")
 async def predict(data: PredictionRequest):
@@ -84,47 +70,14 @@ async def predict(data: PredictionRequest):
         # Perform clustering
         cluster = kmeans_model.predict(X_transformed)[0]
 
-        # Generate a prediction graph
-        plt.figure(figsize=(6, 4))
-        x = np.linspace(0, 100, 100)
-        y = (data.humidity / 100) * x if classification_pred else (data.temperature / 100) * x
-        plt.plot(x, y, label="Prediction Curve", color="blue")
-        plt.xlabel("X-axis (some feature)")
-        plt.ylabel("Prediction value")
-        plt.title("Weather Prediction Graph")
-        plt.legend()
-        graph_path = "static/prediction_graph.png"
-        plt.savefig(graph_path)
-        plt.close()
-
-        # Return the predictions
         return {
             'classification_prediction': int(classification_pred),
             'regression_prediction': float(regression_pred),
             'cluster': int(cluster),
-            'graph': graph_path
         }
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
-
-@app.get("/regression")
-async def get_regression_data():
-    try:
-        # Splitting dataset for regression analysis
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-        # Predict using the regression model
-        y_pred = regression_model.predict(X_test)
-
-        return {
-            "actualRainfall": y_test.tolist(),
-            "predictedRainfall": y_pred.tolist()
-        }
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e)) 
-    
 
  
 # Run with: uvicorn main:app --reload
