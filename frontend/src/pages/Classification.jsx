@@ -6,12 +6,63 @@ import Papa from 'papaparse';
 
 const Classification = () => {
   const navigate = useNavigate(); 
+  const [loading, setLoading] = useState(false); 
+  const [errors, setErrors] = useState({}); 
+  const [formData, setFormData] = useState({
+    year: '',
+    month: '',
+    day: '',
+    rainfall: '',
+    period: ''
+  });
   const [classificationReport, setClassificationReport] = useState(null);
-  const [confusionMatrix, setConfusionMatrix] = useState(null);
+  const [confusionMatrix, setConfusionMatrix] = useState(null);  
+  const [successMessage, setSuccessMessage] = useState("");
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+  const validateInputs = () => {
+    let validationErrors = {};
+    if (!formData.year || formData.year < 1900 || formData.year > new Date().getFullYear()) {
+      validationErrors.year = "Please enter a valid year.";
+    }
+    if (!formData.month || formData.month < 1 || formData.month > 12) {
+      validationErrors.month = "Please enter a valid month (1-12).";
+    }
+    if (!formData.day || formData.day < 1 || formData.day > 31) {
+      validationErrors.day = "Please enter a valid day (1-31).";
+    }
+    if (!formData.rainfall || formData.rainfall < 0) {
+      validationErrors.rainfall = "Please enter a valid rainfall amount (must be 0 or greater).";
+    }
+    if (!formData.period || formData.period < 0) {
+      validationErrors.period = "Please enter a valid period (must be 0 or greater).";
+    }
+    return validationErrors;
+  };   
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const validationErrors = validateInputs();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    setErrors({});
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      const willRain = formData.rainfall >= 1;
+      alert(willRain ? "It will rain today." : "It will not rain today.");
+      setSuccessMessage("Prediction complete! Check the alert for results.");
+      setFormData({ year: '', month: '', day: '', rainfall: '', period: '' });
+    }, 1000); // Simulate processing delay
+  };
 
   useEffect(() => {
     // Load dataset from CSV file using PapaParse
-    Papa.parse('./public/cleaned_dataset.csv', {
+    Papa.parse('/path/to/cleaned_dataset.csv', {
       download: true,
       header: true,
       complete: (result) => {
@@ -57,7 +108,7 @@ const Classification = () => {
         setConfusionMatrix(mockConfusionMatrix);
       }
     });
-  }, []);
+  }, []);  
 
   const handleNavigation = (path) => {
     navigate(path);
