@@ -5,6 +5,7 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 import joblib
+from sklearn.cluster import DBSCAN, KMeans
 
 # Initialize FastAPI app
 app = FastAPI()
@@ -21,7 +22,8 @@ app.add_middleware(
 # Load models using joblib
 classification_model = joblib.load('./app/models/classification_model.pkl')
 regression_model = joblib.load('./app/models/regression_model.pkl')
-kmeans_model = joblib.load('./app/models/kmeans_model.pkl')
+kmeans_model = joblib.load('./app/models/kmeans_model.pkl') 
+dbscan_model = joblib.load('./app/models/dbscan_model.pkl') 
 scaler = joblib.load('./app/models/scaler.pkl')
 
 
@@ -67,6 +69,41 @@ async def predict_rainfall(data: PredictionRequest):
 
         # Return the prediction
         return {"will_rain": bool(prediction)}
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e)) 
+    
+@app.post("/cluster")
+async def perform_clustering(data: PredictionRequest):
+    try:
+        # Convert input data to DataFrame
+        input_data = pd.DataFrame([{
+            'year': data.year,
+            'month': data.month,
+            'day': data.day,
+            'rainfall': data.rainfall,
+            'period': data.period,
+        }])
+
+        # Preprocess input data using the pre-trained scaler
+        X_transformed = scaler.transform(input_data)
+
+        # Predict the cluster using KMeans
+        kmeans_cluster = kmeans_model.predict(X_transformed)
+
+        # Predict the cluster using DBSCAN
+        dbscan_cluster = dbscan_model.fit_predict(X_transformed)
+
+        # Count the number of clusters and noise points in DBSCAN
+        num_clusters_kmeans = len(set(kmeans_cluster)) - (1 if -1 in kmeans_cluster else 0)
+        num_noise_dbscan = list(dbscan_cluster).count(-1)
+
+        return {
+            "kmeans_cluster": int(kmeans_cluster[0]),
+            "dbscan_cluster": int(dbscan_cluster[0]),
+            "num_clusters_kmeans": num_clusters_kmeans,
+            "num_noise_dbscan": num_noise_dbscan
+        }
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
