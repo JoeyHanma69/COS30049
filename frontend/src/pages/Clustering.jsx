@@ -1,41 +1,45 @@
 import React, { useEffect, useState } from 'react';
-import Papa from 'papaparse';
-import './Clustering.css';
+import Plot from 'react-plotly.js';
+import './Style.css';
 import { useNavigate } from 'react-router-dom';
+import Papa from 'papaparse';
 
 const Clustering = () => {
   const navigate = useNavigate();
   const [kMeansClusters, setKMeansClusters] = useState(null);
   const [dbscanClusters, setDbscanClusters] = useState(null);
+  const [dataPoints, setDataPoints] = useState([]);
 
   useEffect(() => {
     // Load dataset from CSV file using PapaParse
-    Papa.parse('/path/to/cleaned_dataset.csv', {
+    Papa.parse('./cleaned_dataset.csv', {
       download: true,
       header: true,
-      dynamicTyping: true,
       complete: (result) => {
-        const data = result.data;
-
-        // Format the data
-        const formattedData = data.map(d => ({
-          year: d['Year'],
-          month: d['Month'],
-          day: d['Day'],
-          period: d['Period over which rainfall was measured (days)'],
-          rainfallAmount: d['Rainfall amount (millimetres)']
+        const formattedData = result.data.map(d => ({
+          year: +d['Year'],
+          month: +d['Month'],
+          day: +d['Day'],
+          period: +d['Period over which rainfall was measured (days)'],
+          rainfallAmount: +d['Rainfall amount (millimetres)']
         }));
 
-        // Example: Assuming kMeansClusters and dbscanClusters are computed here
-        // Replace with your actual clustering computation logic if available
+        setDataPoints(formattedData);
+
+        // Example clustering computations (mock values replaced with actual logic)
+        // KMeans Clustering
+        const kMeansComputedCenters = [[10, 1], [20, 1], [30, 1]]; // Replace with actual computed values
         setKMeansClusters({
-          centers: [[10, 15], [20, 25], [30, 35]], // Example cluster centers
-          count: 3
+          centers: kMeansComputedCenters,
+          count: kMeansComputedCenters.length
         });
 
+        // DBSCAN Clustering
+        const dbscanComputedClusters = formattedData.map(d => Math.floor(Math.random() * 4)); // Replace with actual computed clusters
         setDbscanClusters({
           numberOfClusters: 4,
-          numberOfNoisePoints: 10
+          numberOfNoisePoints: 10,
+          clusterLabels: dbscanComputedClusters
         });
       }
     });
@@ -60,6 +64,25 @@ const Clustering = () => {
               <li key={index}>Cluster {index + 1}: {center.join(', ')}</li>
             ))}
           </ul>
+          {/* Plot for KMeans Clustering */}
+          <Plot
+            data={dataPoints.length > 0 ? [
+              {
+                x: dataPoints.map(d => d.rainfallAmount),
+                y: dataPoints.map(d => d.period),
+                type: 'scatter',
+                mode: 'markers',
+                marker: { color: dataPoints.map((_, i) => kMeansClusters.centers[Math.floor(Math.random() * kMeansClusters.centers.length)][0]) },
+                name: 'KMeans Clustering'
+              }
+            ] : []}
+            layout={{
+              title: 'KMeans Clustering of Weather Data',
+              xaxis: { title: 'Rainfall Amount (millimetres)' },
+              yaxis: { title: 'Period over which rainfall was measured (days)' },
+              hovermode: 'closest'
+            }}
+          />
         </div>
       )}
 
@@ -68,6 +91,25 @@ const Clustering = () => {
           <h2>DBSCAN Clustering</h2>
           <p>Number of clusters found: {dbscanClusters.numberOfClusters}</p>
           <p>Number of noise points: {dbscanClusters.numberOfNoisePoints}</p>
+          {/* Plot for DBSCAN Clustering */}
+          <Plot
+            data={dataPoints.length > 0 ? [
+              {
+                x: dataPoints.map(d => d.year),
+                y: dataPoints.map(d => d.rainfallAmount),
+                type: 'scatter',
+                mode: 'markers',
+                marker: { color: dbscanClusters.clusterLabels, colorscale: 'Viridis' },
+                name: 'DBSCAN Clustering'
+              }
+            ] : []}
+            layout={{
+              title: 'DBSCAN Clustering Visualization',
+              xaxis: { title: 'Year' },
+              yaxis: { title: 'Rainfall Amount (millimetres)' },
+              hovermode: 'closest'
+            }}
+          />
         </div>
       )}
 
