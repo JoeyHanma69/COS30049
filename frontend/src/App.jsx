@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
-import Results from './pages/Results';
+import EDAAnalysis from './pages/EDA'; 
+import ClassificationModel from './pages/Classification'; 
+import RegressionModel from './pages/Regression';
 import './App.css';
 
 function App() {
@@ -11,14 +13,10 @@ function App() {
     <Router>
       <div>
         <Routes>
-          <Route
-            path="/"
-            element={<Home setPredictionData={setPredictionData} />}
-          />
-          <Route
-            path="/results"
-            element={<Results predictionData={predictionData} />}
-          />
+          <Route path="/" element={<Home setPredictionData={setPredictionData} />} />
+          <Route path="/eda" element={<EDAAnalysis />} />
+          <Route path="/regression" element={<RegressionModel />} />
+          <Route path="/classification" element={<ClassificationModel />} />
         </Routes>
       </div>
     </Router>
@@ -26,6 +24,8 @@ function App() {
 }
 
 export default App;
+
+
 
 
 
