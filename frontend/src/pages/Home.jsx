@@ -3,7 +3,7 @@ import heroImage from '../assets/olympic-park.jpg';
 import weatherIcon from '../assets/weather_icon.png'; 
 import chartPreview from '../assets/chart.png';
 import { useNavigate } from 'react-router-dom';
-import './Home.css';  // Assuming you have a Home.css file for styling
+import './Style.css';  // Assuming you have a Home.css file for styling
 
 const Home = () => {
   const navigate = useNavigate();
