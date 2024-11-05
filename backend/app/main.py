@@ -24,11 +24,7 @@ regression_model = joblib.load('./app/models/regression_model.pkl')
 kmeans_model = joblib.load('./app/models/kmeans_model.pkl')
 scaler = joblib.load('./app/models/scaler.pkl')
 
-# Define input model using Pydantic
-class PredictionRequest(BaseModel):
-    date: str  # Expected format: 'YYYY-MM-DD'
-    humidity: float
-    temperature: float
+
 
 @app.get("/")
 async def read_root():
@@ -46,35 +42,31 @@ async def get_overview():
 async def get_features():
     return {"features": ["Temperature prediction", "Rainfall prediction"]}
 
-@app.post("/predict")
-async def predict(data: PredictionRequest):
-    try:
-        # Parse date
-        date = datetime.strptime(data.date, '%Y-%m-%d')
-        
-        # Convert input data to DataFrame
-        input_data = pd.DataFrame({
-            'temperature': [data.temperature],
-            'humidity': [data.humidity],
-            'year': [date.year],
-            'month': [date.month]
-        })
+# Define input model using Pydantic
+class PredictionRequest(BaseModel):
+    year: int
+    month: int
+    day: int
+    rainfall: float
+    period: float
 
-        # Preprocess input data
-        X_transformed = scaler.transform(input_data[['temperature', 'humidity']])
+@app.post("/predict")
+async def predict_rainfall(data: PredictionRequest):
+    try:
+        # Convert input data to DataFrame
+        input_data = pd.DataFrame([{
+            'Year': data.year,
+            'Month': data.month,
+            'Day': data.day,
+            'Rainfall amount (millimetres)': data.rainfall,
+            'Period over which rainfall was measured (days)': data.period
+        }])
 
         # Make predictions
-        classification_pred = classification_model.predict(X_transformed)[0]
-        regression_pred = regression_model.predict(X_transformed)[0]
+        prediction = classification_model.predict(input_data)[0]
 
-        # Perform clustering
-        cluster = kmeans_model.predict(X_transformed)[0]
-
-        return {
-            'classification_prediction': int(classification_pred),
-            'regression_prediction': float(regression_pred),
-            'cluster': int(cluster),
-        }
+        # Return the prediction
+        return {"will_rain": bool(prediction)}
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

@@ -1,12 +1,38 @@
-import React from 'react'; 
+import React, { useState } from 'react'; 
 import heroImage from '../assets/olympic-park.jpg';
 import weatherIcon from '../assets/weather_icon.png'; 
 import chartPreview from '../assets/chart.png';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; 
+import axios from 'axios';
 import './Style.css';  // Assuming you have a Home.css file for styling
 
-const Home = () => {
+const Home = () => {   
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    year: '',
+    month: '',
+    day: '',
+    rainfall: '',
+    period: ''
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };  
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/predict', formData);
+      const willRain = response.data.will_rain;
+      alert(willRain ? "It will rain today." : "It will not rain today.");
+    } catch (error) {
+      console.error("Error making prediction:", error);
+      alert("Failed to get prediction. Please try again.");
+    }
+  };
+
 
   const handleNavigation = (path) => {
     navigate(path);
@@ -49,6 +75,71 @@ const Home = () => {
         <h2>Explore Weather Trends</h2>
         <img src={chartPreview} alt="Chart Preview" className="chart-preview" />
         <p>View historical trends in temperature, humidity, and more to better understand weather patterns.</p>
+      </div> 
+
+      <div className="form-box">
+        <h1 className="form-title">Weather Prediction Platform</h1>
+        <p className="form-description">Enter the details below to predict if it will rain today based on historical weather data.</p>
+
+        <form onSubmit={handleSubmit} className="input-form">
+          <div className="form-group">
+            <label htmlFor="year">Year</label>
+            <input
+              type="number"
+              id="year"
+              name="year"
+              value={formData.year}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="month">Month</label>
+            <input
+              type="number"
+              id="month"
+              name="month"
+              value={formData.month}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="day">Day</label>
+            <input
+              type="number"
+              id="day"
+              name="day"
+              value={formData.day}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="rainfall">Rainfall Amount (mm)</label>
+            <input
+              type="number"
+              id="rainfall"
+              name="rainfall"
+              value={formData.rainfall}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="period">Period over which rainfall was measured (days)</label>
+            <input
+              type="number"
+              id="period"
+              name="period"
+              value={formData.period}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+
+          <button type="submit" className="submit-button">Predict Rainfall</button>
+        </form>
       </div>
 
       {/* Navigation Section with Icons */}
