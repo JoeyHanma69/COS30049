@@ -87,6 +87,20 @@ body {
   color: #666;
 }
 
+/* Specific Weather Information */
+.weather-accuracy {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #333;
+  margin: 15px 0;
+}
+
+.weather-updated {
+  font-size: 1em;
+  color: #777;
+  margin-bottom: 20px;
+}
+
 /* Summary Cards */
 .summary-cards {
   display: flex;
@@ -226,5 +240,6 @@ body {
       width: 80%;
   }
 }
+
 
   
