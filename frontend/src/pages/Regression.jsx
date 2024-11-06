@@ -56,12 +56,19 @@ const Regression = () => {
 
     // Clear previous errors and predictions
     setError('');
-    setPrediction(null);
+    setPrediction(null); 
+    setRainIndicator(null);
     setLoading(true);
 
     try {
-      const response = await axios.post('http://127.0.0.1:8000/regression', formData);
-
+      const response = await axios.post('http://127.0.0.1:8000/regression', formData); 
+      const predictedRainfall = response.data.prediction;
+      setPrediction(predictedRainfall);
+      if (predictedRainfall > 0.1) {
+        setRainIndicator('Rain is expected. Bring an umbrella!');
+      } else {
+        setRainIndicator('No rain expected today.');
+      }
       // Set prediction result from response
       setPrediction(response.data.prediction);
     } catch (err) {
@@ -196,7 +203,7 @@ const Regression = () => {
         {prediction !== null && (
           <div className="prediction-box">
             <h3>Prediction Result</h3>
-            <p>The predicted rainfall amount is: {prediction.toFixed(2)} mm</p>
+            <p>The predicted rainfall amount is: <strong>{prediction.toFixed(2)} mm</strong></p>
           </div>
         )}
 
