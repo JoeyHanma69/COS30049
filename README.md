@@ -53,6 +53,7 @@ Weather-Report-Prediction/
 - **FastAPI**: for handling API requests
 - **Uvicorn**: ASGI server for serving FastAPI
 - **scikit-learn**, **pandas**, **numpy**: for AI model processing and data handling
+- **d3**, **react-plotly.js**: to present the AI model’s predictions
 
 > **Note**: All required Python libraries for the back end are listed in `backend/requirements.txt`.
 
@@ -96,7 +97,14 @@ cd Weather-Report-Prediction
    ```bash
    npm install
    ```
-
+##Optional for frontend if you dont have these: 
+```bash
+   npm install react-plotly.js plotly.js
+   ```
+and/or 
+```bash
+   npm install d3
+   ```
 ---
 
 ## Running Instructions
@@ -105,7 +113,7 @@ cd Weather-Report-Prediction
 
 1. Start the FastAPI server using Uvicorn:
    ```bash
-   uvicorn main:app --host 0.0.0.0 --port 8000
+   uvicorn main.app:main --reload
    ```
 
 2. Once started, the API documentation will be available at:
@@ -137,21 +145,86 @@ cd Weather-Report-Prediction
 2. Update `backend/main.py` to load and initialize the model on server startup if not done automatically.
 
 ### API Endpoints
+## API Endpoints Overview
 
-1. **Prediction Endpoint**: The back end includes a `/predict` endpoint to send data for predictions.
-   
-   - **Endpoint URL**: `http://localhost:8000/predict`
-   - **Method**: POST
-   - **Data**: JSON object containing input features for the prediction model
-   
-   Example request:
-   ```json
-   {
-       "temperature": 22,
-       "humidity": 50,
-       "wind_speed": 10
-   }
-   ```
+### Default Endpoints
+
+**GET**  
+`/`  
+*Read Root*  
+
+- **Purpose**: This endpoint is typically used to test if the API is up and running.  
+- **Response**: A simple response with a welcome message, like "Welcome to the Weather Prediction API!".  
+- **How to use**: Click on this endpoint, then click "Try it out" and "Execute" to receive a response.
+
+**GET**  
+`/overview`  
+*Get Overview*  
+
+- **Purpose**: Provides a summary overview of the application.  
+- **Response**: Contains key information like the platform title, description, and target users.  
+  - **Title**: Name of the platform (e.g., "Weather Report Prediction Platform").  
+  - **Description**: What the application does (e.g., "A platform that provides machine learning-based predictions for weather variables").  
+  - **Target Users**: Who would benefit from this application (e.g., "Professionals in weather-dependent industries").  
+- **How to use**: Click "Try it out" to get information about the app.
+
+**GET**  
+`/features`  
+*Get Features*  
+
+- **Purpose**: To get a list of features that the application supports, like temperature and rainfall prediction.  
+- **Response**: A JSON object listing available features, such as `["Temperature prediction", "Rainfall prediction"]`.  
+- **How to use**: Click "Try it out" to see all available features.
+
+**GET**  
+`/models`  
+*Get Models*  
+
+- **Purpose**: This endpoint gives a list of machine learning models implemented in the app, such as Logistic Regression, K-Means Clustering, and DBSCAN.  
+- **Response**: The list of models available for use in predictions.  
+- **How to use**: Click "Try it out" to retrieve the names of the models in use.
+
+**POST**  
+`/predict`  
+*Predict Rainfall*  
+
+- **Purpose**: To predict weather-related variables, such as the likelihood of rain based on input features like temperature, humidity, date, etc.  
+- **Input**: JSON data containing relevant input values:  
+  - `date`: The date of prediction (YYYY-MM-DD format).  
+  - `temperature`: A floating-point value for temperature.  
+  - `humidity`: A floating-point value for humidity.  
+- **Response**: Returns:  
+  - `classification_prediction`: Predicted weather condition.  
+  - `regression_prediction`: Expected rainfall amount.  
+  - `cluster`: Cluster information.  
+  - `graph`: Graph path for visualization if available.  
+- **How to use**: Click on "Try it out," enter the necessary fields, and press "Execute" to get the prediction.
+
+**POST**  
+`/cluster`  
+*Perform Clustering*  
+
+- **Purpose**: This endpoint is used to perform clustering analysis using KMeans or DBSCAN.  
+- **Input**: JSON data containing weather-related features.  
+- **Response**: Returns clustering details such as:  
+  - The number of clusters identified.  
+  - Noise points (in the case of DBSCAN).  
+- **How to use**: Enter relevant inputs to perform clustering.
+
+**POST**  
+`/regression`  
+*Predict Future Rainfall*  
+
+- **Purpose**: This endpoint is used for making predictions using a regression model.  
+- **Input**: Takes features like:  
+  - `year`: The year of prediction.  
+  - `month`: The month of prediction.  
+  - `day`: The day of prediction.  
+  - `rainfall`: Current rainfall.   
+- **Response**: Provides numerical predictions for rainfall or other variables based on regression modeling.  
+- **How to use**: Click "Try it out," enter the relevant features, and execute it to get the regression-based prediction.
+
+
 
 2. Update the front end to send a POST request to the `/predict` endpoint using Axios or Fetch API.
 
