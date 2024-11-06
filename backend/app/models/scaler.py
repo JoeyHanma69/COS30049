@@ -3,7 +3,7 @@ import pandas as pd
 import joblib
 
 # Load the dataset
-df = pd.read_csv(r"C:\Users\cucum\Downloads\COS30049\assignment 2\cleaned_dataset.csv")
+df = pd.read_csv("backend/app/ML/cleaned_dataset.csv")
 
 # Select features to fit the scaler
 X = df[['Year', 'Month', 'Day', 'Period over which rainfall was measured (days)']]
