@@ -7,6 +7,10 @@ import numpy as np
 import joblib
 from sklearn.cluster import DBSCAN, KMeans
 
+from app.ML.Regression import Regression
+
+
+
 # Initialize FastAPI app
 app = FastAPI()
 
@@ -112,22 +116,22 @@ class RegressionRequest(BaseModel):
     year: int
     month: int
     day: int
-    rainfall: float
     period: float
-    monthsAhead: int
-
 
 @app.post("/regression")
 async def predict(data: RegressionRequest):
-    try:        
-        prediction = regression_model.predict(data.year, data.month, data.day, data.rainfall)
+    try:
+        # Load the Regression model and use predict method
+        reg_model = Regression()
+        prediction = reg_model.predict(data.year, data.month, data.day, data.period)
 
         return {
             "prediction": prediction
         }
-
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
 
  
 # Run with: uvicorn main:app --reload

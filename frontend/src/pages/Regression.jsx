@@ -12,25 +12,20 @@ const Regression = () => {
     year: 2024,
     month: 11,
     day: 6,
-    rainfall: 1,
-    period: 2,
-    monthsAhead: 1
-    // year: '',
-    // month: '',
-    // day: '',
-    // rainfall: '',
-    // period: '',
-    // monthsAhead: 1
+    period: 1
   });
 
-  const [forecastResult, setForecastResult] = useState(null);
-  const [errors, setErrors] = useState({});
+  const [prediction, setPrediction] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
+  // Handle input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
+  // Validate inputs before submission
   const validateInputs = () => {
     let validationErrors = {};
     if (!formData.year || formData.year < 1900 || formData.year > new Date().getFullYear()) {
@@ -42,33 +37,38 @@ const Regression = () => {
     if (!formData.day || formData.day < 1 || formData.day > 31) {
       validationErrors.day = "Please enter a valid day (1-31).";
     }
-    if (!formData.rainfall || formData.rainfall < 0) {
-      validationErrors.rainfall = "Please enter a valid rainfall amount (must be 0 or greater).";
-    }
-    if (!formData.period || formData.period < 0) {
-      validationErrors.period = "Please enter a valid period (must be 0 or greater).";
-    }
-    if (!formData.monthsAhead || formData.monthsAhead < 1) {
-      validationErrors.monthsAhead = "Please enter the number of months for forecasting.";
+    if (!formData.period || formData.period <= 0) {
+      validationErrors.period = "Please enter a valid period (must be greater than 0).";
     }
     return validationErrors;
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate form data
     const validationErrors = validateInputs();
     if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
+      setError(validationErrors);
       return;
     }
-    setErrors({});
+
+    // Clear previous errors and predictions
+    setError('');
+    setPrediction(null);
+    setLoading(true);
 
     try {
       const response = await axios.post('http://127.0.0.1:8000/regression', formData);
-      setForecastResult(response.data);
-      console.log(response.data)
-    } catch (error) {
-      console.error("Error making forecast:", error);
+
+      // Set prediction result from response
+      setPrediction(response.data.prediction);
+    } catch (err) {
+      console.error('Error making prediction:', err);
+      setError('Failed to get prediction. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -135,7 +135,7 @@ const Regression = () => {
       </div> 
       <div className="form-box">
         <h1 className="form-title">Weather Forecast Platform</h1>
-        <p className="form-description">Enter the details below to forecast if it will rain in the upcoming months based on historical weather data.</p>
+        <p className="form-description">Enter the details below to forecast if it will rain in the upcoming months based on historical weather data.</p> 
 
         <form onSubmit={handleSubmit} className="input-form">
           <div className="form-group">
@@ -148,7 +148,7 @@ const Regression = () => {
               onChange={handleInputChange}
               required
             />
-            {errors.year && <span className="error-message">{errors.year}</span>}
+            {error.year && <span className="error-message">{error.year}</span>}
           </div>
           <div className="form-group">
             <label htmlFor="month">Month</label>
@@ -160,7 +160,7 @@ const Regression = () => {
               onChange={handleInputChange}
               required
             />
-            {errors.month && <span className="error-message">{errors.month}</span>}
+            {error.month && <span className="error-message">{error.month}</span>}
           </div>
           <div className="form-group">
             <label htmlFor="day">Day</label>
@@ -172,19 +172,7 @@ const Regression = () => {
               onChange={handleInputChange}
               required
             />
-            {errors.day && <span className="error-message">{errors.day}</span>}
-          </div>
-          <div className="form-group">
-            <label htmlFor="rainfall">Rainfall Amount (mm)</label>
-            <input
-              type="number"
-              id="rainfall"
-              name="rainfall"
-              value={formData.rainfall}
-              onChange={handleInputChange}
-              required
-            />
-            {errors.rainfall && <span className="error-message">{errors.rainfall}</span>}
+            {error.day && <span className="error-message">{error.day}</span>}
           </div>
           <div className="form-group">
             <label htmlFor="period">Period over which rainfall was measured (days)</label>
@@ -196,34 +184,25 @@ const Regression = () => {
               onChange={handleInputChange}
               required
             />
-            {errors.period && <span className="error-message">{errors.period}</span>}
-          </div>
-          <div className="form-group">
-            <label htmlFor="monthsAhead">Number of Months Ahead to Forecast</label>
-            <input
-              type="number"
-              id="monthsAhead"
-              name="monthsAhead"
-              value={formData.monthsAhead}
-              onChange={handleInputChange}
-              required
-            />
-            {errors.monthsAhead && <span className="error-message">{errors.monthsAhead}</span>}
+            {error.period && <span className="error-message">{error.period}</span>}
           </div>
 
-          <button type="submit" className="submit-button">Forecast Rainfall</button>
+          <button type="submit" className="submit-button" disabled={loading}>
+            {loading ? 'Predicting...' : 'Predict Rainfall'}
+          </button>
         </form>
 
-        {forecastResult && (
-          <div className="result-box">
-            <h2>Forecast Result</h2>
-            <ul>
-              {forecastResult.forecast.map(([month, result], index) => (
-                <li key={index}>
-                  Month: {month}, Prediction: {result}
-                </li>
-              ))}
-            </ul>
+
+        {prediction !== null && (
+          <div className="prediction-box">
+            <h3>Prediction Result</h3>
+            <p>The predicted rainfall amount is: {prediction.toFixed(2)} mm</p>
+          </div>
+        )}
+
+        {error && typeof error === 'string' && (
+          <div className="error-message">
+            {error}
           </div>
         )}
       </div>
@@ -238,4 +217,3 @@ const Regression = () => {
 };
 
 export default Regression;
-
