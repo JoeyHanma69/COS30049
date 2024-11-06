@@ -15,7 +15,8 @@ const Regression = () => {
     period: 1
   });
 
-  const [prediction, setPrediction] = useState(null);
+  const [prediction, setPrediction] = useState(null); 
+  const [rainIndicator, setRainIndicator] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
