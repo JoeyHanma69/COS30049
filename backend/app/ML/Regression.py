@@ -1,48 +1,67 @@
-import os 
+import os
 import pickle
+import joblib
 import pandas as pd 
 import matplotlib.pyplot as plt 
-import warnings  
-from sklearn.model_selection import train_test_split 
 from sklearn.linear_model import LinearRegression 
+from sklearn.model_selection import train_test_split 
 from sklearn.metrics import mean_squared_error, r2_score 
 
-warnings.filterwarnings('ignore') 
+dirname = os.path.dirname(__file__)
 
-df = pd.read_csv(r"C:\Users\cucum\Downloads\COS30049\assignment 2\cleaned_dataset.csv") 
+class Regression:
+    def __init__(self): 
+        self.model = LinearRegression()
 
-X = df[['Year', 'Month', 'Day', 'Period over which rainfall was measured (days)']]  
+    def train(self):
+        df = pd.read_csv('backend/app/ML/cleaned_dataset.csv') 
 
-y = df['Rainfall amount (millimetres)'] 
+        x = df[['Year', 'Month', 'Day', 'Period over which rainfall was measured (days)']]  
+        y = df['Rainfall amount (millimetres)'] 
 
-X.fillna(X.median(), inplace=True)
-y.fillna(y.median(), inplace=True) 
+        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42) 
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42) 
+        self.model.fit(x_test.values, y_test.values) 
 
-model = LinearRegression() 
-model.fit(X_test, y_test) 
-y_pred = model.predict(X_test)  
+        filename = os.path.join(dirname, '../models/test.pkl')
+        joblib.dump(self.model, filename)
 
-mse = mean_squared_error(y_test, y_pred)  
-r2 = r2_score(y_test, y_pred) 
+    def predict(self, year, month, day, rainfall): 
+        filename = os.path.join(dirname, '../models/test.pkl')
+        model = joblib.load(filename)
 
-print(f"Mean Squared Error (MSE): {mse:.2f}")
-print(f"R-squared (R2): {r2:.2f}")
- 
-plt.figure(figsize=(10, 6)) 
-plt.scatter(y_test, y_pred, color='blue') 
-plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'k--', lw=2)
-plt.xlabel('Actual Rainfall (millimetres)')
-plt.ylabel('Predicted Rainfall (millimetres)')
-plt.title('Actual vs Predicted Rainfall')
-plt.show() 
+        return model.predict([[year, month, day, rainfall]])[0]
 
-model_dir = os.path.dirname(__file__)
+    def graph(self): 
+        df = pd.read_csv('backend/app/ML/cleaned_dataset.csv') 
 
-model_path = os.path.join(model_dir, 'regression_model.pkl') 
-with open(model_path, 'wb') as f:  
-    pickle.dump(model, f) 
+        x = df[['Year', 'Month', 'Day', 'Period over which rainfall was measured (days)']]  
+        y = df['Rainfall amount (millimetres)'] 
+
+        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42) 
+
+        model = LinearRegression() 
+        model.fit(x_test, y_test) 
+        y_pred = model.predict(x_test)  
+
+        mse = mean_squared_error(y_test, y_pred)  
+        r2 = r2_score(y_test, y_pred) 
+
+        print(f"Mean Squared Error (MSE): {mse:.2f}")
+        print(f"R-squared (R2): {r2:.2f}")
+        
+        plt.figure(figsize=(10, 6)) 
+        plt.scatter(y_test, y_pred, color='blue') 
+        plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'k--', lw=2)
+        plt.xlabel('Actual Rainfall (millimetres)')
+        plt.ylabel('Predicted Rainfall (millimetres)')
+        plt.title('Actual vs Predicted Rainfall')
+        plt.show() 
     
-print(f"Regression model saved to {model_path}")
-    
+if __name__ == '__main__': 
+    model = Regression()
+
+    model.train()
+
+    prediction = model.predict(2024, 5, 3, 5)
+    print(prediction)

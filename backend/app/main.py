@@ -49,32 +49,86 @@ class PredictionRequest(BaseModel):
     year: int
     month: int
     day: int
+    rainfall: float
     period: float
 
 @app.post("/predict")
-async def predict(data: PredictionRequest):
+async def predict_rainfall(data: PredictionRequest):
     try:
         # Convert input data to DataFrame
-        input_data = pd.DataFrame({
-            'Year': [data.year],
-            'Month': [data.month],
-            'Day': [data.day],
-            'Period over which rainfall was measured (days)': [data.period]
-        })
+        input_data = pd.DataFrame([{
+            'Year': data.year,
+            'Month': data.month,
+            'Day': data.day,
+            'Rainfall amount (millimetres)': data.rainfall,
+            'Period over which rainfall was measured (days)': data.period
+        }])
 
-        # Perform scaling using StandardScaler
+        # Make predictions
+        prediction = classification_model.predict(input_data)[0]
+
+        # Return the prediction
+        return {"will_rain": bool(prediction)}
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e)) 
+    
+@app.post("/cluster")
+async def perform_clustering(data: PredictionRequest):
+    try:
+        # Convert input data to DataFrame
+        input_data = pd.DataFrame([{
+            'year': data.year,
+            'month': data.month,
+            'day': data.day,
+            'rainfall': data.rainfall,
+            'period': data.period,
+        }])
+
+        # Preprocess input data using the pre-trained scaler
         X_transformed = scaler.transform(input_data)
 
-        # Make predictions using the regression model
-        regression_pred = regression_model.predict(X_transformed)[0]
+        # Predict the cluster using KMeans
+        kmeans_cluster = kmeans_model.predict(X_transformed)
+
+        # Predict the cluster using DBSCAN
+        dbscan_cluster = dbscan_model.fit_predict(X_transformed)
+
+        # Count the number of clusters and noise points in DBSCAN
+        num_clusters_kmeans = len(set(kmeans_cluster)) - (1 if -1 in kmeans_cluster else 0)
+        num_noise_dbscan = list(dbscan_cluster).count(-1)
 
         return {
-            'regression_prediction': float(regression_pred),
+            "kmeans_cluster": int(kmeans_cluster[0]),
+            "dbscan_cluster": int(dbscan_cluster[0]),
+            "num_clusters_kmeans": num_clusters_kmeans,
+            "num_noise_dbscan": num_noise_dbscan
         }
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-     
+
+class RegressionRequest(BaseModel):
+    year: int
+    month: int
+    day: int
+    rainfall: float
+    period: float
+    monthsAhead: int
+
+
+@app.post("/regression")
+async def predict(data: RegressionRequest):
+    try:        
+        prediction = regression_model.predict(data.year, data.month, data.day, data.rainfall)
+
+        return {
+            "prediction": prediction
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
  
 # Run with: uvicorn main:app --reload
 

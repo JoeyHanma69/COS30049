@@ -9,12 +9,18 @@ const Regression = () => {
   const navigate = useNavigate();
   const [data, setData] = useState({ actualRainfall: [], predictedRainfall: [] });
   const [formData, setFormData] = useState({
-    year: '',
-    month: '',
-    day: '',
-    rainfall: '',
-    period: '',
+    year: 2024,
+    month: 11,
+    day: 6,
+    rainfall: 1,
+    period: 2,
     monthsAhead: 1
+    // year: '',
+    // month: '',
+    // day: '',
+    // rainfall: '',
+    // period: '',
+    // monthsAhead: 1
   });
 
   const [forecastResult, setForecastResult] = useState(null);
@@ -58,8 +64,9 @@ const Regression = () => {
     setErrors({});
 
     try {
-      const response = await axios.post('http://127.0.0.1:8000/forecast', formData);
+      const response = await axios.post('http://127.0.0.1:8000/regression', formData);
       setForecastResult(response.data);
+      console.log(response.data)
     } catch (error) {
       console.error("Error making forecast:", error);
     }
@@ -231,5 +238,4 @@ const Regression = () => {
 };
 
 export default Regression;
-
 
